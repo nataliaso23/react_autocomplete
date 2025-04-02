@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Person } from '../types/Person';
+
 interface AutocompleteProps {
   people: Person[];
   onSelected: (person: Person | null) => void;
   debounceTime?: number;
 }
+
 export const Autocomplete: React.FC<AutocompleteProps> = ({
   people,
   onSelected,
@@ -36,6 +38,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
     return () => clearTimeout(handler);
   }, [query, people, debounceTime, lastSearched]);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
@@ -50,65 +53,42 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     onSelected(person);
   };
 
-  return React.createElement(
-    'div',
-    { className: `dropdown ${showDropdown ? 'is-active' : ''}` },
-    React.createElement(
-      'div',
-      { className: 'dropdown-trigger' },
-      React.createElement('input', {
-        type: 'text',
-        placeholder: 'Enter a part of the name',
-        className: 'input',
-        'data-cy': 'search-input',
-        value: query,
-        onChange: handleInputChange,
-        onFocus: () => setShowDropdown(true),
-        onBlur: () => setTimeout(() => setShowDropdown(false), 200),
-      }),
-    ),
-    showDropdown
-      ? React.createElement(
-        'div',
-        {
-            className: 'dropdown-menu',
-            role: 'menu',
-            'data-cy': 'suggestions-list',
-          },
-          React.createElement(
-            'div',
-            { className: 'dropdown-content' },
-            filteredPeople.length > 0
-              ? filteredPeople.map(person =>
-                  React.createElement(
-                    'div',
-                    {
-                      key: person.slug,
-                      className: 'dropdown-item',
-                      'data-cy': 'suggestion-item',
-                      onMouseDown: () => handleSelect(person),
-                    },
-                    React.createElement(
-                      'p',
-                      { className: 'has-text-link' },
-                      person.name,
-                    ),
-                  ),
-                )
-              : React.createElement(
-                  'div',
-                  {
-                    className: 'dropdown-item',
-                    'data-cy': 'no-suggestions-message',
-                  },
-                  React.createElement(
-                  'p',
-                { className: 'has-text-danger' },
-                'No matching suggestions',
-              ),
-            ),
-        ),
-      )
-      : null,
+  return (
+    <div className={`dropdown ${showDropdown ? 'is-active' : ''}`}>
+      <div className="dropdown-trigger">
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          data-cy="search-input"
+          value={query}
+          onChange={handleInputChange}
+          onFocus={() => setShowDropdown(true)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        />
+      </div>
+      {showDropdown && (
+        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div className="dropdown-content">
+            {filteredPeople.length > 0 ? (
+              filteredPeople.map(person => (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onClick={() => handleSelect(person)} // Usando onClick
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))
+            ) : (
+              <div className="dropdown-item" data-cy="no-suggestions-message">
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
