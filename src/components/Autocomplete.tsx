@@ -18,13 +18,14 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [lastSearched, setLastSearched] = useState('');
 
   useEffect(() => {
+    // Verifica se a consulta foi alterada antes de disparar a busca
     if (query === lastSearched) {
       return;
     }
 
     const handler = setTimeout(() => {
       if (query.trim() === '') {
-        setFilteredPeople(people);
+        setFilteredPeople([]); // Não mostrar sugestões quando a query for vazia
       } else {
         setFilteredPeople(
           people.filter(person =>
@@ -73,10 +74,10 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
             {filteredPeople.length > 0 ? (
               filteredPeople.map(person => (
                 <div
-                  key={person.slug}
+                  key={person.slug} // Usando person.slug como chave única, se for garantido
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  onClick={() => handleSelect(person)} // Usando onClick
+                  onClick={() => handleSelect(person)}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
